@@ -1,0 +1,17 @@
+version: '3.8'
+
+services:
+  php:
+    build: ./docker/php
+    ports:
+      - 8181:8181
+    volumes:
+      - .:/game
+
+  nginx:
+    build: ./docker/nginx
+    ports:
+      - 8180:80
+    volumes:
+      - ./web:/usr/share/nginx/html
+      - ./node_modules:/usr/share/nginx/html/node_modules

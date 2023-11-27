@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Bomberman Game | MPUG</title>
+<style>
+@font-face {
+    font-family: 'CookieRunBold';
+    src: url('/fonts/CookieRunBold.otf') format('opentype');
+}
+html, body {
+    font-family: 'CookieRunBold';
+    height: 100%;
+    margin: 0;
+    padding: 0;
+}
+body {
+    background-color: #4158D0;
+    background-image: linear-gradient(43deg, #4158D0 0%, #C850C0 46%, #FFCC70 100%);
+}
+
+.inner {
+    padding: 20px;
+}
+
+.game-screen {
+    margin-top: 20px;
+}
+
+.game-screen canvas {
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.o-btn {
+    font-family: 'CookieRunBold';
+    font-size: 1rem;
+    color: #fff;
+    appearance: none;
+    border: none;
+    padding: .5em 1em;
+    border-radius: 5px;
+    background-size: 300% 100%;
+    background-image: linear-gradient(to right, #29323c, #485563, #2b5876, #4e4376);
+    box-shadow: 0 4px 15px 0 rgba(45, 54, 65, 0.75);
+    cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<div class="inner">
+    <button class="o-btn js-new-game">
+        새 게임 (또는 R키)
+    </button>
+
+    <div class="game-screen js-game-screen"></div>
+</div>
+
+<script type="module">
+import {Game} from '/js/Game.js';
+
+const game = new Game(
+    'localhost',
+    8181,
+    '.js-game-screen',
+);
+
+document.addEventListener('keydown', e => {
+    if (e.key.toLowerCase() === 'r') {
+        game.newGame();
+    }
+});
+
+document.querySelector('.js-new-game').addEventListener('click', () => {
+    game.newGame();
+});
+</script>
+
+</body>
+</html>
