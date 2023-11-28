@@ -15,7 +15,7 @@
 1. 이 저장소를 Fork 하여 내 저장소를 만듭니다.
 2. lib/Users 디렉토리에 __{MyUniqueName}.php__ 로 클래스 파일을 만듭니다.
 3. lib/Users/SampleUser.php 파일의 예제 코드를 참고하여 나만의 코드를 작성합니다.
-4. 내 저장소에 커밋 후 __event2022 브랜치__ 로 보내는 Pull Request를 생성합니다.
+4. 내 저장소에 커밋 후 __event2023 브랜치__ 로 보내는 Pull Request를 생성합니다.
 5. MPUG 운영진이 코드를 검토 후 병합합니다.
 6. 경품 당첨 시 연락을 받기 위한 [구글 설문지](https://forms.gle/2xmbc31uiTVNZmas8)를 작성합니다.
 
