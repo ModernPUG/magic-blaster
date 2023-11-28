@@ -19,6 +19,8 @@ class SampleUser extends User
 
     private int $mode = self::MODE_ATTACK;
 
+    private ?int $target_player_id = null;
+
     public function getName(): string
     {
         return '샘플유저';
@@ -56,11 +58,35 @@ class SampleUser extends User
 
         // 공격 모드
         if ($this->mode === self::MODE_ATTACK) {
-            // 거리가 가까운 플레이어를 찾는다.
-            $target_player = self::findNearestEntity(
-                $own_player,
-                $other_player_list,
-            );
+            $target_player = null;
+
+            // 공격 대상이 없다면
+            if ($this->target_player_id === null) {
+                // 거리가 가까운 순서대로 플레이어 목록을 정렬한다.
+                /** @var Player[] */
+                $other_player_list = self::sortEntityListByDistance(
+                    $own_player,
+                    $other_player_list,
+                );
+
+                // 피해가 가장 적은 플레이어를 찾는다.
+                $min_damage = 999999;
+                foreach ($other_player_list as $other_player) {
+                    if ($other_player->damage < $min_damage) {
+                        $target_player = $other_player;
+                    }
+                }
+
+                $this->target_player_id = $target_player->id;
+            // 공격 대상이 있다면
+            } else {
+                foreach ($other_player_list as $other_player) {
+                    if ($other_player->id === $this->target_player_id) {
+                        $target_player = $other_player;
+                        break;
+                    }
+                }
+            }
 
             $diff_x = $own_player->x - $target_player->x;
             $diff_y = $own_player->y - $target_player->y;
@@ -84,6 +110,9 @@ class SampleUser extends User
                 if ($own_player->can_use_magic) {
                     // 도망 모드로 전환
                     $this->mode = self::MODE_RUN;
+                    // 공격 대상 초기화
+                    $this->target_player_id = null;
+
                     return UserAction::MAGIC;
                 }
             }
