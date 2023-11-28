@@ -91,6 +91,8 @@ class Magic extends Entity
                 $this->map->removeEntity($this);
                 $this->stop_action = true;
             }
+
+            return;
         }
 
         ++$this->action_count;
@@ -104,6 +106,7 @@ class Magic extends Entity
             }
         } else {
             $this->explosion_activated = true;
+            $this->playSoundEffect('explosion.ogg');
         }
     }
 

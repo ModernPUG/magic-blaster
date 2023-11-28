@@ -15,6 +15,8 @@ export class Game {
     #playStage;
     #infoStage;
 
+    #soundBgm;
+
     constructor(
         serverHost,
         serverPort,
@@ -23,7 +25,11 @@ export class Game {
     ) {
         this.#serverHost = serverHost;
         this.#serverPort = serverPort;
-        this.#elScreen = document.querySelector(screenSelector)
+        this.#elScreen = document.querySelector(screenSelector);
+
+        this.#soundBgm = new Audio('/assets/sounds/battle.ogg');
+        this.#soundBgm.loop = true;
+        this.#soundBgm.volume = 0.3;
     }
 
     #connectSocket() {
@@ -77,6 +83,9 @@ export class Game {
     }
 
     #initGame(data) {
+        this.#soundBgm.pause();
+        this.#soundBgm.currentTime = 0;
+
         this.#spriteList = {};
 
         if (this.#pixiApp) {
@@ -139,6 +148,8 @@ export class Game {
 
         this.#elScreen.innerHTML = '';
         this.#elScreen.appendChild(this.#pixiApp.view);
+
+        this.#soundBgm.play();
     }
 
     #updateGame(data) {
@@ -176,6 +187,12 @@ export class Game {
 
             if (entity.type === 'Player') {
                 this.#updatePlayerInfo(entity);
+            }
+
+            if (entity.sound_effect) {
+                const sound = new Audio(`/assets/sounds/${entity.sound_effect}`);
+                sound.volume = 0.3;
+                sound.play();
             }
         });
 

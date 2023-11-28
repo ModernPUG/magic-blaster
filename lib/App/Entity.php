@@ -53,6 +53,8 @@ abstract class Entity implements BaseEntity
     private int $x = 0;
     private int $y = 0;
 
+    private ?string $sound_effect = null;
+
     public function __construct(
         protected readonly \App\Game $game,
         public readonly int $width,
@@ -101,6 +103,11 @@ abstract class Entity implements BaseEntity
         return clone $this->rectangle;
     }
 
+    final protected function playSoundEffect(string $sound_effect): void
+    {
+        $this->sound_effect = $sound_effect;
+    }
+
     /**
      * @param int[] $use_frame_list
      * @return void
@@ -144,6 +151,9 @@ abstract class Entity implements BaseEntity
             $sprite_tile_y,
         ] = $this->sprite_position_by_frame[$current_frame];
 
+        $sound_effect = $this->sound_effect;
+        $this->sound_effect = null;
+
         return [
             'type' => self::getClassName(),
             'id' => $this->id,
@@ -157,6 +167,7 @@ abstract class Entity implements BaseEntity
             'sprite_z_index' => $this->sprite_z_index,
             'x' => $this->x,
             'y' => $this->y,
+            'sound_effect' => $sound_effect,
         ];
     }
 
