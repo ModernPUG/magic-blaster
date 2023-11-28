@@ -27,6 +27,7 @@ class Game
             return;
         }
 
+        $user_class_list = [];
         $dir_it = new \DirectoryIterator(__DIR__ . '/../Users');
         foreach ($dir_it as $fileinfo) {
             if (
@@ -40,13 +41,17 @@ class Game
             $filename = $fileinfo->getFilename();
             $classname = 'Users\\' . preg_replace('/\.php$/', '', $filename);
 
-            $class = new \ReflectionClass($classname);
-            if (!$class->isSubclassOf(User::class)) {
+            $user_class = new \ReflectionClass($classname);
+            if (!$user_class->isSubclassOf(User::class)) {
                 continue;
             }
 
-            $user = $class->newInstance($this->map);
+            $user_class_list[] = $user_class;
+        }
 
+        shuffle($user_class_list);
+        foreach ($user_class_list as $user_class) {
+            $user = $user_class->newInstance($this->map);
             $player = new \App\Player($this, $user);
             $this->map->addPlayer($player);
         }
