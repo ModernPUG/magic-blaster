@@ -12,6 +12,10 @@ use App\Proxy\Entity;
 use App\Proxy\Player;
 use App\Proxy\Magic;
 
+/**
+ * 본인이 개발한 클래스에 대한 소개를 주석에 자유롭게 작성해주세요.
+ * 이 예제 코드를 참고하여 본인만의 클래스를 만들어주세요.
+ */
 class SampleUser extends User
 {
     private const MODE_ATTACK = 1;
@@ -21,12 +25,19 @@ class SampleUser extends User
 
     private ?int $target_player_id = null;
 
+    /**
+     * 게임 화면에 표시될 플레이어 이름입니다.
+     *
+     * @return string
+     */
     public function getName(): string
     {
         return '샘플유저';
     }
 
     /**
+     * 사용자 액션
+     *
      * @param \App\Proxy\Map $map 지도
      * @param \App\Proxy\Player $own_player 플레이어 본인
      * @param \App\Proxy\Player[] $other_player_list 다른 플레이어 목록
