@@ -97,14 +97,10 @@ class SampleUser extends User
                 if ($diff_x > 0) {
                     if ($this->canPlayerMoveLeft($own_player)) {
                         $user_action = UserAction::LEFT;
-                    } else {
-                        echo "왼쪽 이동 실패\n";
                     }
                 } elseif ($diff_x < 0) {
                     if ($this->canPlayerMoveRight($own_player)) {
                         $user_action = UserAction::RIGHT;
-                    } else {
-                        echo "오른쪽 이동 실패\n";
                     }
                 }
 
@@ -118,14 +114,10 @@ class SampleUser extends User
                 if ($diff_y > 0) {
                     if ($this->canPlayerMoveUp($own_player)) {
                         $user_action = UserAction::UP;
-                    } else {
-                        echo "위로 이동 실패\n";
                     }
                 } elseif ($diff_y < 0) {
                     if ($this->canPlayerMoveDown($own_player)) {
                         $user_action = UserAction::DOWN;
-                    } else {
-                        echo "아래로 이동 실패\n";
                     }
                 }
 
@@ -200,11 +192,9 @@ class SampleUser extends User
                     // 플레이어가 지도의 중앙보다 오른쪽에 있으면
                     if ($map_distance['horizontal'] < 0) {
                         $user_action = UserAction::LEFT;
-                        echo "플레이어가 지도의 중앙보다 오른쪽에 있다.\n";
                     // 플레이어가 지도의 중앙보다 왼쪽에 있거나 같으면
                     } else {
                         $user_action = UserAction::RIGHT;
-                        echo "플레이어가 지도의 중앙보다 왼쪽에 있다.\n";
                     }
                 }
 
@@ -232,11 +222,9 @@ class SampleUser extends User
                     // 플레이어가 지도의 중앙보다 위쪽에 있으면
                     if ($map_distance['vertical'] < 0) {
                         $user_action = UserAction::DOWN;
-                        echo "플레이어가 지도의 중앙보다 아래쪽에 있다.\n";
                     // 플레이어가 지도의 중앙보다 아래쪽에 있거나 같으면
                     } else {
                         $user_action = UserAction::UP;
-                        echo "플레이어가 지도의 중앙보다 위쪽에 있다.\n";
                     }
                 }
 
