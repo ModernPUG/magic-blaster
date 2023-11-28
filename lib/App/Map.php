@@ -116,13 +116,6 @@ class Map
         shuffle($position_list);
         $player->setPosition($position_list[0]['x'], $position_list[0]['y']);
 
-        // TODO: 테스트 코드
-        // if ($player->getId() === 1) {
-        //     $player->setPosition(48, 368);
-        // } elseif ($player->getId() === 2) {
-        //     $player->setPosition(48, 336);
-        // }
-
         $this->addEntity($player);
     }
 
