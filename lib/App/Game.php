@@ -51,32 +51,6 @@ class Game
             $this->map->addPlayer($player);
         }
 
-        // $bot_user = new class () extends User {
-        //     public function getName(): string
-        //     {
-        //         return 'bot';
-        //     }
-
-        //     public function action(PlayerInfo $player_info): UserAction
-        //     {
-        //         return UserAction::STOP;
-        //     }
-        // };
-
-        // $time_magic = new TimeMagic($this);
-        // $time_magic->setPosition(300, 100);
-        // $this->map->addEntity($time_magic);
-
-        // $player = new \App\Player($this, $bot_user);
-        // $player->setPosition(300, 100);
-        // $this->map->addEntity($player);
-
-        // for ($i = 1; $i <= 32; $i++) {
-        //     $user = new \Users\SampleUser();
-        //     $player = new \App\Player($this, $user);
-        //     $this->map->addPlayer($player);
-        // }
-
         $this->dispatchUpdateGame();
         $this->is_initialized = true;
     }
@@ -119,14 +93,6 @@ class Game
         $interval = 0.0167;
 
         $this->timer = \React\EventLoop\Loop::addPeriodicTimer($interval, function () use (&$tick) {
-            // if ($tick % 50 === 0) {
-            //     $time_magic = new Magic($this);
-            //     $x = mt_rand($time_magic->width, $this->map->width - $time_magic->width);
-            //     $y = mt_rand($time_magic->height, $this->map->height - $time_magic->height);
-            //     $time_magic->setPosition($x, $y);
-            //     $this->map->addEntity($time_magic);
-            // }
-
             $this->dispatchUpdateGame(function (Entity $entity) {
                 $entity->action();
             });
