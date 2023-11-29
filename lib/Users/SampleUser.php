@@ -32,7 +32,7 @@ class SampleUser extends User
      */
     public function getName(): string
     {
-        return '인생날로먹고싶다';
+        return '마이아바타';
     }
 
     /**
