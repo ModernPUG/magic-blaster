@@ -92,7 +92,7 @@ class JHansol extends User {
         $py = self::Y($player, $player->y);
         $dx = $x - $px;
         $dy = $y - $py;
-        error_log("dx : {$dx}/{$px}/{$x}, dy : {$dy}/{$py}/{$y}");
+        // error_log("dx : {$dx}/{$px}/{$x}, dy : {$dy}/{$py}/{$y}");
         if($dx < 0) $t[] = self::LEFT;
         elseif($dx > 0) $t[] = self::RIGHT;
         if($dy < 0) $t[] = self::UP;
@@ -218,7 +218,7 @@ class JHansol extends User {
             if(!$direction & in_array($this->prev_direction, $pad)) $direction = $this->prev_direction;
             elseif(!$direction)$direction = random_int(0, count($pad) > 0 ? count($pad) - 1 : 0);
             $this->prev_direction = $direction;
-            error_log("Direction : {$direction}");
+            // error_log("Direction : {$direction}");
             return match ($direction) {
                 self::UP => UserAction::UP,
                 self::DOWN => UserAction::DOWN,

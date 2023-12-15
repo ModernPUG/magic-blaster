@@ -12,7 +12,7 @@ use App\Proxy\Entity;
 use App\Proxy\Player;
 use App\Proxy\Magic;
 
-class SongajiUser extends SampleUser
+class SongajiUser extends User
 {
     private ?UserAction $user_action = UserAction::UP;
     public function getName(): string
@@ -63,7 +63,7 @@ class SongajiUser extends SampleUser
 
             return $this->user_action;
         }
-        
+
         return $this->user_action;
     }
 }

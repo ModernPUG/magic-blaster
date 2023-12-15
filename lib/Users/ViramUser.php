@@ -230,6 +230,7 @@ class ViramUser extends User
                     $user_action = UserAction::LEFT;
                 // 위치가 동일하면
                 } else {
+                    $user_action = UserAction::RIGHT;
                     //여기에 중앙으로 가는 코드가 있었는데 제외
                     // // 플레이어가 지도의 중앙보다 오른쪽에 있으면
                     // if ($map_distance['horizontal'] < 0) {
@@ -261,7 +262,8 @@ class ViramUser extends User
                     $user_action = UserAction::UP;
                 // 위치가 동일하면
                 } else {
-                    //d여기에 중앙으로 가는 코드가 있었는데 제외 
+                    $user_action = UserAction::DOWN;
+                    //d여기에 중앙으로 가는 코드가 있었는데 제외
                     // // 플레이어가 지도의 중앙보다 위쪽에 있으면
                     // if ($map_distance['vertical'] < 0) {
                     //     $user_action = UserAction::DOWN;
