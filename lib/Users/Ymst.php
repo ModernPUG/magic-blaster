@@ -18,13 +18,6 @@ use App\Proxy\Magic;
  */
 class Ymst extends User
 {
-    private const MODE_ATTACK = 1;
-    private const MODE_RUN = 2;
-
-    private int $mode = self::MODE_ATTACK;
-
-    private ?int $target_player_id = null;
-
     /**
      * 게임 화면에 표시될 플레이어 이름입니다.
      *
@@ -50,143 +43,63 @@ class Ymst extends User
         array $other_player_list,
         array $magic_list,
     ): UserAction {
-        /*
-        \App\Proxy\Map 클래스는 지도의 정보를 제공합니다.
+        $is_danger = false;
 
-        플레이어(\App\Proxy\Player), 매직(\App\Proxy\Magic)은 엔터티(\App\Proxy\Entity)입니다.
+        $row = array_fill(0, $map->width, 0);
+        $danger_map = array_fill(0, $map->height, $row);
 
-        이 클래스는 \App\User 클래스를 상속받아 구현되었습니다.
-        \App\User 클래스는 엔터티 간의 충돌 여부, 거리 등을 계산하는 메서드를 제공합니다.
-        \App\User가 제공하는 정적 메서드, 인스턴스 메서드를 활용해 보세요.
+        // 위험 지도 만들기
+        foreach ($magic_list as $magic) {
+            foreach ($magic->getAllDamageRectangleList() as $damage_rectangle) {
+                $coordinates = $damage_rectangle->getCoordinates();
+                [
+                    'x1' => $x1,
+                    'y1' => $y1,
+                    'x2' => $x2,
+                    'y2' => $y2,
+                ] = $coordinates;
 
-        모든 엔터티는 사각형(\App\Rectangle)을 가지고 있습니다.
-        getRectangle() 메서드를 통해 사각형을 가져올 수 있습니다.
-        사각형을 이용하여 두 엔터티가 충돌하는지 여부를 확인할 수 있습니다.
-
-        \App\Rectangle 클래스는 사각형 간의 충돌 여부, 거리 등을 계산하는 메서드를 제공합니다.
-        \App\Rectangle 클래스가 제공하는 정적 메서드, 인스턴스 메서드를 활용해 보세요.
-        */
-
-        // 공격 모드
-        if ($this->mode === self::MODE_ATTACK) {
-            $target_player = null;
-
-            // 공격 대상이 없다면
-            if ($this->target_player_id === null) {
-                // 거리가 가까운 순서대로 플레이어 목록을 정렬한다.
-                /** @var Player[] */
-                $other_player_list = self::sortEntityListByDistance(
-                    $own_player,
-                    $other_player_list,
-                );
-
-                // 피해가 가장 적은 플레이어를 찾는다.
-                $min_damage = 999999;
-                foreach ($other_player_list as $other_player) {
-                    if ($other_player->damage < $min_damage) {
-                        $target_player = $other_player;
+                for ($y = $y1; $y <= $y2; ++$y) {
+                    if ($y < 0 || $y >= $map->height) {
+                        continue;
                     }
-                }
 
-                $this->target_player_id = $target_player->id;
-            // 공격 대상이 있다면
-            } else {
-                foreach ($other_player_list as $other_player) {
-                    if ($other_player->id === $this->target_player_id) {
-                        $target_player = $other_player;
-                        break;
+                    for ($x = $x1; $x <= $x2; ++$x) {
+                        if ($x < 0 || $x >= $map->width) {
+                            break;
+                        }
+
+                        $danger_map[$y][$x] = +1;
                     }
                 }
             }
-
-            $diff_x = $own_player->x - $target_player->x;
-            $diff_y = $own_player->y - $target_player->y;
-
-            $abs_diff_x = abs($diff_x);
-            $abs_diff_y = abs($diff_y);
-
-            // 거리가 가까우면
-            if (
-                (
-                    $abs_diff_x <= $own_player->half_width
-                    && $abs_diff_y <= $own_player->height
-                )
-                ||
-                (
-                    $abs_diff_y <= $own_player->half_height
-                    && $abs_diff_x <= $own_player->width
-                )
-            ) {
-                // 마법을 사용할 수 있다면
-                if ($own_player->can_use_magic) {
-                    // 도망 모드로 전환
-                    $this->mode = self::MODE_RUN;
-                    // 공격 대상 초기화
-                    $this->target_player_id = null;
-
-                    return UserAction::MAGIC;
-                }
-            }
-
-            $user_action = null;
-
-            // 수평 이동
-            $fn_horizontal_move = function () use ($own_player, $diff_x) {
-                $user_action = null;
-
-                if ($diff_x > 0) {
-                    if ($this->canPlayerMoveLeft($own_player)) {
-                        $user_action = UserAction::LEFT;
-                    }
-                } elseif ($diff_x < 0) {
-                    if ($this->canPlayerMoveRight($own_player)) {
-                        $user_action = UserAction::RIGHT;
-                    }
-                }
-
-                return $user_action;
-            };
-
-            // 수직 이동
-            $fn_vertical_move = function () use ($own_player, $diff_y) {
-                $user_action = null;
-
-                if ($diff_y > 0) {
-                    if ($this->canPlayerMoveUp($own_player)) {
-                        $user_action = UserAction::UP;
-                    }
-                } elseif ($diff_y < 0) {
-                    if ($this->canPlayerMoveDown($own_player)) {
-                        $user_action = UserAction::DOWN;
-                    }
-                }
-
-                return $user_action;
-            };
-
-            if (abs($diff_x) > abs($diff_y)) {
-                $user_action = $fn_horizontal_move();
-                // 수평 이동 실패 시 수직 이동
-                if (!$user_action) {
-                    $user_action = $fn_vertical_move();
-                }
-            } else {
-                $user_action = $fn_vertical_move();
-                // 수직 이동 실패 시 수평 이동
-                if (!$user_action) {
-                    $user_action = $fn_horizontal_move();
-                }
-            }
-
-            if (!$user_action) {
-                $user_action = UserAction::STOP;
-            }
-
-            return $user_action;
         }
 
-        // 도망 모드
-        if ($this->mode === self::MODE_RUN) {
+        [
+            'x1' => $x1,
+            'y1' => $y1,
+            'x2' => $x2,
+            'y2' => $y2,
+        ] = $own_player->getRectangle()->getCoordinates();
+        // 플레이어가 위험 지역에 있는지 확인
+        for ($y = $y1; $y <= $y2; ++$y) {
+            if ($y < 0 || $y >= $map->height) {
+                continue;
+            }
+
+            for ($x = $x1; $x <= $x2; ++$x) {
+                if ($x < 0 || $x >= $map->width) {
+                    break;
+                }
+
+                if ($danger_map[$y][$x] > 0) {
+                    $is_danger = true;
+                    break;
+                }
+            }
+        }
+
+        if ($is_danger) {
             // 거리가 가까운 마법을 찾는다.
             /** @var Magic|null */
             $target_magic = self::findNearestEntity(
@@ -195,7 +108,6 @@ class Ymst extends User
             );
 
             if ($target_magic === null) {
-                $this->mode = self::MODE_ATTACK;
                 return UserAction::STOP;
             }
 
@@ -207,15 +119,6 @@ class Ymst extends User
                 $own_player,
                 $target_magic,
             );
-
-            // 플레이어와 마법의 거리가 어느 정도 멀어지면
-            if (
-                abs($magic_distance['horizontal']) >= $own_player->width * mt_rand(6, 10)
-                && abs($magic_distance['vertical']) >= $own_player->height * mt_rand(6, 10)
-            ) {
-                $this->mode = self::MODE_ATTACK;
-                return UserAction::STOP;
-            }
 
             $magic_h_v_diff = abs($magic_distance['horizontal']) - abs($magic_distance['vertical']);
 
@@ -284,6 +187,100 @@ class Ymst extends User
             return $user_action;
         }
 
-        return UserAction::STOP;
+        // 거리가 가까운 순서대로 플레이어 목록을 정렬한다.
+        /** @var Player[] */
+        $other_player_list = self::sortEntityListByDistance(
+            $own_player,
+            $other_player_list,
+        );
+
+        $target_player = null;
+        // 피해가 가장 적은 플레이어를 찾는다.
+        $min_damage = 999999;
+        foreach ($other_player_list as $other_player) {
+            if ($other_player->damage < $min_damage) {
+                $target_player = $other_player;
+            }
+        }
+
+        $diff_x = $own_player->x - $target_player->x;
+        $diff_y = $own_player->y - $target_player->y;
+
+        $abs_diff_x = abs($diff_x);
+        $abs_diff_y = abs($diff_y);
+
+        // 거리가 가까우면
+        if (
+            (
+                $abs_diff_x <= $own_player->half_width * 2
+                && $abs_diff_y <= $own_player->height * 2
+            )
+            ||
+            (
+                $abs_diff_y <= $own_player->half_height * 2
+                && $abs_diff_x <= $own_player->width * 2
+            )
+        ) {
+            // 마법을 사용할 수 있다면
+            if ($own_player->can_use_magic) {
+                return UserAction::MAGIC;
+            }
+        }
+
+        $user_action = null;
+
+        // 수평 이동
+        $fn_horizontal_move = function () use ($own_player, $diff_x) {
+            $user_action = null;
+
+            if ($diff_x > 0) {
+                if ($this->canPlayerMoveLeft($own_player)) {
+                    $user_action = UserAction::LEFT;
+                }
+            } elseif ($diff_x < 0) {
+                if ($this->canPlayerMoveRight($own_player)) {
+                    $user_action = UserAction::RIGHT;
+                }
+            }
+
+            return $user_action;
+        };
+
+        // 수직 이동
+        $fn_vertical_move = function () use ($own_player, $diff_y) {
+            $user_action = null;
+
+            if ($diff_y > 0) {
+                if ($this->canPlayerMoveUp($own_player)) {
+                    $user_action = UserAction::UP;
+                }
+            } elseif ($diff_y < 0) {
+                if ($this->canPlayerMoveDown($own_player)) {
+                    $user_action = UserAction::DOWN;
+                }
+            }
+
+            return $user_action;
+        };
+
+        if (abs($diff_x) > abs($diff_y)) {
+            $user_action = $fn_horizontal_move();
+            // 수평 이동 실패 시 수직 이동
+            if (!$user_action) {
+                $user_action = $fn_vertical_move();
+            }
+        } else {
+            $user_action = $fn_vertical_move();
+            // 수직 이동 실패 시 수평 이동
+            if (!$user_action) {
+                $user_action = $fn_horizontal_move();
+            }
+        }
+
+        if (!$user_action) {
+            $user_action = UserAction::STOP;
+        }
+
+        return $user_action;
     }
 }
