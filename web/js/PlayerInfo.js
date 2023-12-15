@@ -14,7 +14,7 @@ export class PlayerInfo extends PIXI.Container {
         {
             const graphics = new PIXI.Graphics();
             graphics.beginFill(0x808080, 0.5);
-            graphics.drawRoundedRect(0, 0, 180, 60, 10);
+            graphics.drawRoundedRect(0, 0, 190, 60, 10);
             graphics.endFill();
             this.addChild(graphics);
         }

@@ -103,10 +103,23 @@ class Game
             });
 
             ++$tick;
-            if ($tick === 18000) {
-                $this->stop();
+            if ($tick === 10800) {
+                $this->gameOver();
             }
         });
+    }
+
+    private function gameOver(): void
+    {
+        $data = [
+            'type' => 'game_over',
+        ];
+
+        if ($this->update_listener) {
+            call_user_func($this->update_listener, $data);
+        }
+
+        $this->stop();
     }
 
     public function stop(): void
