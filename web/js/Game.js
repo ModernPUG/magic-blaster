@@ -57,6 +57,10 @@ export class Game {
                     case 'update_game':
                         this.#updateGame(message.data);
                         break;
+
+                    case 'game_over':
+                        this.#gameOver();
+                        break;
                 }
             };
 
@@ -94,7 +98,7 @@ export class Game {
 
         const playStageWidth = data.screen_width;
         const playStageHeight = data.screen_height;
-        const infoStageWidth = 200;
+        const infoStageWidth = 400;
         const resolution = window.devicePixelRatio;
 
         PIXI.settings.SCALE_MODE = PIXI.SCALE_MODES.NEAREST;
@@ -214,21 +218,26 @@ export class Game {
             playerInfo = new PlayerInfo(entity);
             this.#infoStagePlayerList[entity.id] = playerInfo;
 
-            const margin = 10;
-            let totalHeight = margin;
+            const margin = 5;
+            let playerInfoCount = 1; // 새로 추가할 것이니 1부터 시작
             for (const child of this.#infoStage.children) {
                 if (child instanceof PlayerInfo) {
-                    totalHeight += child.height + margin;
+                    ++playerInfoCount;
                 }
             }
 
-            playerInfo.x = margin;
-            playerInfo.y = totalHeight;
+            playerInfo.x = margin + ((playerInfoCount % 2 === 1) ? 0 : playerInfo.width + margin);
+            playerInfo.y = (Math.round(playerInfoCount / 2) - 1) * (playerInfo.height + margin) + margin;
 
             this.#infoStage.addChild(playerInfo);
         }
 
         playerInfo.updateData(entity);
+    }
+
+    #gameOver() {
+        this.#soundBgm.pause();
+        alert('Game Over!');
     }
 
     newGame() {
